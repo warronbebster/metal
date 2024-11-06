@@ -36,6 +36,8 @@ struct SizeAwareColorShader: ViewModifier {
         content.visualEffect { content, proxy in
             content
                 .colorEffect(ShaderLibrary.sizeAwareColor(
+//                    this is how you pass params into a shader?
+//                    what is "proxy" here?
                     .float2(proxy.size)
                 ))
         }
@@ -47,6 +49,7 @@ struct TimeVaryingColorShader: ViewModifier {
     private let startDate = Date()
     
     func body(content: Content) -> some View {
+//        this view with .animation means re-check this view for re-renders pretty frequently
         TimelineView(.animation) { _ in
             content.visualEffect { content, proxy in
                 content

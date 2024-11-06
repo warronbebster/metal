@@ -13,6 +13,7 @@ extension View {
         modifier(RandomNoiseShader())
     }
     
+//    this function takes a view and applies a "modifier"
     func perlinNoiseShader() -> some View {
         modifier(PerlinNoiseShader())
     }

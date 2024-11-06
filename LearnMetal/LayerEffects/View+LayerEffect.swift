@@ -12,6 +12,10 @@ extension View {
     func pixellationShader(pixelSize: Float = 8) -> some View {
         modifier(PixellationShader(pixelSize: pixelSize))
     }
+    
+    func dissolveShader() -> some View {
+        modifier(DissolveShader())
+    }
 }
 
 struct PixellationShader: ViewModifier {
@@ -24,6 +28,7 @@ struct PixellationShader: ViewModifier {
             content
                 .layerEffect(
                     ShaderLibrary.pixellate(
+//                        pass in pixel size param and time param
                         .float(pixelSize),
                         .float(startDate.timeIntervalSinceNow)
                     ), maxSampleOffset: .zero
@@ -31,3 +36,25 @@ struct PixellationShader: ViewModifier {
         }
     }
 }
+
+struct DissolveShader: ViewModifier {
+    
+    let startDate = Date()
+    
+    func body(content: Content) -> some View {
+        TimelineView(.animation) { _ in
+            content
+                .padding(50)
+                .drawingGroup()
+                .layerEffect(
+                    ShaderLibrary.dissolve(
+//                        pass in pixel size param and time param
+                        .float(startDate.timeIntervalSinceNow)
+                    ),  maxSampleOffset: CGSize(width: 100, height: 100)
+                )
+        }
+    }
+}
+
+
+

@@ -10,9 +10,13 @@ using namespace metal;
 
 [[ stitchable ]]
 half4 color(
+//            does metal automatically assign x and y as params? or do they automatically get passed in when this shader gets initiated
+//            looks like it's automatic
     float2 position,
     half4 color
 ) {
+//    return a 4 value type for color
+//    or maybe more accurate, returns a function?
     return half4(position.x/255.0, position.y/255.0, 0.0, 1.0);
 }
 

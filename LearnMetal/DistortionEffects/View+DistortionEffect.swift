@@ -43,7 +43,8 @@ struct WigglyShader: ViewModifier {
                 .distortionEffect(
                     ShaderLibrary.wiggly(
                         .float(startDate.timeIntervalSinceNow)),
-                    maxSampleOffset: CGSize(width: 0, height: 50)
+//                    warn iOS that the pixels might move
+                    maxSampleOffset: CGSize(width: 100, height: 100)
                 )
         }
     }

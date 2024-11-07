@@ -10,17 +10,21 @@ import SwiftUI
 struct ContentView: View {
     
     var body: some View {
+        Text("Hello, world!")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+            .wigglyShader()
+
         Image(systemName: "globe")
-            .font(.system(size: 200))
+            .font(.system(size: 100))
             .foregroundStyle(.blue)
             .dissolveShader()
-//            .wigglyShader()
         Text("Hello, world!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.blue)
+            .font(.largeTitle)
+            .fontWeight(.bold)
+            .foregroundStyle(.blue)
 //                    .wigglyShader()
-                    .pixellationShader()
+            .pixellationShader()
 //        Color.white
 //            .edgesIgnoringSafeArea(.all)
 //        shader here is a function on… a view? or a Color?

@@ -44,13 +44,13 @@ struct DissolveShader: ViewModifier {
     func body(content: Content) -> some View {
         TimelineView(.animation) { _ in
             content
-                .padding(50)
+                .padding(30)
                 .drawingGroup()
                 .layerEffect(
                     ShaderLibrary.dissolve(
 //                        pass in pixel size param and time param
                         .float(startDate.timeIntervalSinceNow)
-                    ),  maxSampleOffset: CGSize(width: 100, height: 100)
+                    ),  maxSampleOffset: CGSize(width: 30, height: 30)
                 )
         }
     }

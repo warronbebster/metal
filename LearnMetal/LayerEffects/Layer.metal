@@ -29,24 +29,38 @@ half4 dissolve(
 ) {
     // Sample original color at current position
     half4 originalColor = layer.sample(position);
-
+    
     // Center point
     float2 center = float2(150.0, 250.0);
     
     // Calculate vector from center to current position
     float2 toPosition = position - center;
+    float dist = length(toPosition);
+    // Generate noise based on position and time
+    float2 noisePos = position * 0.01;
+    float noise = fract(sin(dot(noisePos + float2(time * 0.5), float2(12.9898, 78.233))) * 43758.5453);
     
-    // Normalize the vector and move outward based on time
-    float2 direction = normalize(toPosition);
-    float2 newPosition = position + direction * time;
+    // Add turbulence by layering noise at different frequencies
+    float turbulence = noise;
+    turbulence += fract(sin(dot(noisePos * 2.0 + float2(time), float2(12.9898, 78.233))) * 43758.5453) * 0.5;
     
-    // Sample color at the new position
-    half4 newColor = layer.sample(newPosition);
+    // Use turbulence to modify the displacement direction
+    float2 turbulentDir = float2(
+        cos(turbulence),
+        sin(turbulence)
+    );
     
-    // Only use new position if it's transparent at the destination
-    float alpha = (newColor.a < 0.01) ? originalColor.a : 0.0;
-   
-    return originalColor * half4(1.0, 1.0, 1.0, alpha);
+    // Combine original direction with turbulent direction
+    float2 direction = normalize(toPosition) + turbulentDir;
+    
+    // Scale displacement based on distance from center and time
+    float displacement = time * 20.0 * (1.0 + turbulence);
+    float2 newPosition = position + direction * displacement;
+    
+    // Fade out based on displacement
+    float fade = 1.0 - smoothstep(0.0, 100.0, displacement);
+    
+    return originalColor * half4(1.0, 1.0, 1.0, fade);
 }
 
 

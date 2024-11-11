@@ -17,6 +17,10 @@ extension View {
     func perlinNoiseShader() -> some View {
         modifier(PerlinNoiseShader())
     }
+
+    func turbNoiseShader() -> some View {
+        modifier(TurbNoiseShader())
+    }
 }
 
 struct RandomNoiseShader: ViewModifier {
@@ -36,15 +40,41 @@ struct RandomNoiseShader: ViewModifier {
 }
 
 struct PerlinNoiseShader: ViewModifier {
+
+    let startDate = Date()
     
     func body(content: Content) -> some View {
-        content.visualEffect { content, proxy in
-            content
-                .colorEffect(
-                    ShaderLibrary.perlinNoise(
-                        .float2(proxy.size)
+        TimelineView(.animation) { _ in
+            content.visualEffect { content, proxy in
+                content
+                    .colorEffect(
+                        ShaderLibrary.perlinNoise(
+                            .float2(proxy.size),
+                            .float(startDate.timeIntervalSinceNow)
+                        )
                     )
-                )
+            }
+        }
+    }
+}
+
+
+struct TurbNoiseShader: ViewModifier {
+
+    let startDate = Date()
+    
+    func body(content: Content) -> some View {
+        TimelineView(.animation) { _ in
+            content
+                .visualEffect { content, proxy in
+                    content
+                        .colorEffect(
+                            ShaderLibrary.turbulenceNoise(
+                                .float2(proxy.size),
+                                .float(startDate.timeIntervalSinceNow)
+                            )
+                        )
+                }
         }
     }
 }

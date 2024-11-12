@@ -34,21 +34,47 @@ float noise2(float2 st, float time) {
         + (d - b) * u.x * u.y;
 }
 
+float2 displace(float2 position, float2 center, float time) {
+    // Calculate vector from center to position
+    float2 toCenter = position - center;
+    
+    // Calculate base direction from center
+    float2 baseDirection = normalize(toCenter);
+    
+    // Get persistent noise value based on original position only
+    // Scale position down for smoother variation between neighboring pixels
+    float noiseValue = noise2(position * 0.1, 0);
+    
+    // Create a subtle directional offset
+    // Convert noise to a small angle variation (-0.2 to 0.2 radians)
+    float angle = (noiseValue - 0.5) ;
+    float2 noiseDirection = float2(
+        cos(angle) * baseDirection.x - sin(angle) * baseDirection.y,
+        sin(angle) * baseDirection.x + cos(angle) * baseDirection.y
+    );
+    
+    // Scale displacement with time using smooth log growth
+    float displacement = log(abs(time) + 1) * 20;
+    
+    // Apply the displacement in the noise-modified direction
+    return position - noiseDirection * displacement;
+}
+
 // this is just a position shader. You can layer other shaders (e.g. color) below them to affect opacity
 [[ stitchable ]]
 float2 wiggly(float2 position, float time) {
-    float2 center = float2(150, 300); // Assuming screen center
+    float2 center = float2(80, 150); // Assuming screen center
     float2 toCenter = position - center;
     float2 direction = normalize(toCenter);
     // float distance = length(toCenter);
     
     // Add perlin-like noise to direction
     // this just adds random noise in a particular direction, but doesn't displace consistently
-    float noiseAmount = noise2(position, time);
+    float noiseAmount = noise2(position, 1);
     float2 noiseDir = float2(cos(noiseAmount * 6.28), sin(noiseAmount * 6.28));
     
     // Blend original direction with noise
-    direction = -normalize(direction + (noiseDir * 0.1));
+    direction = -normalize(direction );
     int displacementSpeed = 5;
     int displacementAmount = 20;
 
@@ -60,22 +86,26 @@ float2 wiggly(float2 position, float time) {
     // exponential decay: this starts quick and then falls into place
     //  float displacement = 100 * pow(2, time);
     
-    return position + direction * displacement;
+    // return position + direction * displacement;
+    return displace(position, center, time);
 }
 
 [[ stitchable ]] float2 sandy(float2 position, float time) {
     // Sample the original position first to see if there's content
     float2 originalPos = position;
+// 
     
     // Calculate fall distance based on time
-    float fallDistance = time * 100.0;
+    float fallDistance = time * 10.0;
     
     // If there's space below, move down
     float2 newPos = position + float2(0.0, fallDistance);
     
     // Add some random horizontal drift
+    // This does not compound over time
     float drift = random2(position + time) * 2.0 - 1.0;  // Range -1 to 1
-    newPos.x += drift * 10.0;  // Adjust drift amount
+    newPos.x += drift * fallDistance;  // Adjust drift amount
+    newPos.y += drift * fallDistance;  // Adjust drift amount
     
     return newPos;
 }

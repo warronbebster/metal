@@ -43,21 +43,21 @@ float2 displace(float2 position, float2 center, float time) {
     
     // Get persistent noise value based on original position only
     // Scale position down for smoother variation between neighboring pixels
-    float noiseValue = noise2(position * 0.1, 0);
+    float noiseValue = noise2(position, 0);
     
     // Create a subtle directional offset
     // Convert noise to a small angle variation (-0.2 to 0.2 radians)
-    float angle = (noiseValue - 0.5) ;
+    float angle = (noiseValue - 0.5);
     float2 noiseDirection = float2(
         cos(angle) * baseDirection.x - sin(angle) * baseDirection.y,
         sin(angle) * baseDirection.x + cos(angle) * baseDirection.y
     );
     
     // Scale displacement with time using smooth log growth
-    float displacement = log(abs(time) + 1) * 20;
+    float displacement = (log(abs(time) + 1) * 40) * noiseValue;
     
     // Apply the displacement in the noise-modified direction
-    return position - noiseDirection * displacement;
+    return position - baseDirection * displacement;
 }
 
 // this is just a position shader. You can layer other shaders (e.g. color) below them to affect opacity

@@ -17,8 +17,8 @@ struct ContentView: View {
         Image(systemName: "globe")
             .font(.system(size: 100))
             .foregroundStyle(.blue)
-//            .wigglyShader()
-            .sandyShader()
+            .wigglyShader()
+//            .sandyShader()
     //        Rectangle()  // Use Rectangle instead of Color for guaranteed dimensions
     //                .fill(Color.blue)  // Give it a visible color
     //                .frame(width: 800, height: 600)  // Match our resolution

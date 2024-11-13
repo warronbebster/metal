@@ -49,7 +49,7 @@ struct WigglyShader: ViewModifier {
                     ShaderLibrary.wiggly(
                         .float(startDate.timeIntervalSinceNow)),
 //                    warn iOS that the pixels might move
-                    maxSampleOffset: CGSize(width: 100, height: 200)
+                    maxSampleOffset: CGSize(width: 120, height: 200)
                 )
         }
     }
@@ -66,7 +66,7 @@ struct SandyShader: ViewModifier {
                     ShaderLibrary.sandy(
                         .float(startDate.timeIntervalSinceNow)),
 //                    warn iOS that the pixels might move
-                    maxSampleOffset: CGSize(width: 100, height: 200)
+                    maxSampleOffset: CGSize(width: 240, height: 200)
                 )
         }
     }

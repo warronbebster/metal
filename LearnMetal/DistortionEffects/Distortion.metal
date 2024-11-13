@@ -13,14 +13,10 @@ float random2(float2 position) {
 }
 
 
-float noise2(float2 st, float time) {
+float noise2(float2 st) {
 
     float2 i = floor(st);
     float2 f = fract(st);
-    int speed = 20; // Slower adjustment from the time parameter
-
-    float2 offset = float2(time / speed);
-    i += offset;
 
     float a = random2(i);
     float b = random2(i + float2(1.0, 0.0));
@@ -43,21 +39,30 @@ float2 displace(float2 position, float2 center, float time) {
     
     // Get persistent noise value based on original position only
     // Scale position down for smoother variation between neighboring pixels
-    float noiseValue = noise2(position, 0);
+    // this returns a value from -1 to 1
+    float noiseValue = noise2(position) * 2.0 - 1.0;
     
     // Create a subtle directional offset
     // Convert noise to a small angle variation (-0.2 to 0.2 radians)
-    float angle = (noiseValue - 0.5);
-    float2 noiseDirection = float2(
-        cos(angle) * baseDirection.x - sin(angle) * baseDirection.y,
-        sin(angle) * baseDirection.x + cos(angle) * baseDirection.y
-    );
+    // float angle = (noiseValue - 0.5);
+    // float2 noiseDirection = float2(
+    //     cos(angle) * baseDirection.x - sin(angle) * baseDirection.y,
+    //     sin(angle) * baseDirection.x + cos(angle) * baseDirection.y
+    // );
     
     // Scale displacement with time using smooth log growth
     float displacement = (log(abs(time) + 1) * 40) * noiseValue;
+    // float displacement = (abs(time) + 1) * noiseValue;
+    // float displacement = (abs(time) + 1);
+
+    float2 displacedPos = position - baseDirection * displacement;
+
+    // float noiseOnDestination = noise2(displacedPos, 0);
+    
+    // float2 finalPos = displacedPos + noiseDirection;
     
     // Apply the displacement in the noise-modified direction
-    return position - baseDirection * displacement;
+    return displacedPos;
 }
 
 // this is just a position shader. You can layer other shaders (e.g. color) below them to affect opacity
@@ -70,7 +75,7 @@ float2 wiggly(float2 position, float time) {
     
     // Add perlin-like noise to direction
     // this just adds random noise in a particular direction, but doesn't displace consistently
-    float noiseAmount = noise2(position, 1);
+    float noiseAmount = noise2(position);
     float2 noiseDir = float2(cos(noiseAmount * 6.28), sin(noiseAmount * 6.28));
     
     // Blend original direction with noise

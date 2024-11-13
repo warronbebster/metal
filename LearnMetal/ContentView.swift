@@ -14,6 +14,7 @@ struct ContentView: View {
             .font(.largeTitle)
             .fontWeight(.bold)
             .wigglyShader()
+        
         Image(systemName: "globe")
             .font(.system(size: 100))
             .foregroundStyle(.blue)

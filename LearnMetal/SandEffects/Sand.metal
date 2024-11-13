@@ -14,39 +14,76 @@ float hash(float2 p) {
 ) {
     half4 originalColor = layer.sample(position);
     
-    // Check if current pixel is part of the content (not transparent)
-    if (originalColor.a < 0.1) {
-        return half4(0.0);  // Return transparent for empty spaces
-    }
+    // Debug movement attempts with more detail
+    // if (originalColor.a < 0.1) {
+    //     return half4(0.0, 0.0, 1.0, 0.1);  // Blue for empty space
+    // }
     
-    // Calculate potential new position based on time
-    float fallDistance = time;  // Control fall speed
-    float2 newPos = position;
+    // Use floor(time) to get discrete steps of movement
+    float steps = floor(abs(time) * 4.0);  // Multiply by 2.0 to move twice per second
+    float random = hash(position + float2(steps));  // Add randomness based on position
     
-    // Try positions from current to maximum fall distance
-    for (float y = 0; y <= fallDistance; y += 1.0) {
-        float2 checkPos = position + float2(0.0, y);
-        half4 checkColor = layer.sample(checkPos);
+    if (steps > 0) {
+        // Try to move down by the number of steps
+        float2 newPos = position - float2(0.0, steps);
+        half4 checkColor = layer.sample(newPos);
         
-        if (checkColor.a < 0.1) {  // Found an empty spot
-            newPos = checkPos;
-            
-            // Try diagonal movement if blocked
-            float2 diagCheckPos = newPos + float2(hash(position + time) > 0.5 ? 1.0 : -1.0, 1.0);
-            half4 diagColor = layer.sample(diagCheckPos);
-            
-            if (diagColor.a < 0.1) {
-                newPos = diagCheckPos;
-            }
-        } else {
-            break;  // Stop when we hit something
+        if (checkColor.a < 0.1) {
+            // Space is empty, show movement
+            return half4(0.0, 1.0, 0.0, 0.3);  // Green for movement
+        } 
+
+        // Check diagonals with randomness
+        float2 leftPos = newPos + float2(-1.0, 1.0);
+        float2 rightPos = newPos + float2(1.0, 1.0);
+        half4 leftColor = layer.sample(leftPos);
+        half4 rightColor = layer.sample(rightPos);
+        
+        if (leftColor.a < 0.5 && rightColor.a < 0.5) {
+            // Both directions available, choose randomly
+            return random > 0.5 ? originalColor : half4(1, 0, 0, 0);
+        } else if (leftColor.a < 0.5) {
+            return random > 0.7 ? originalColor : half4(1, 0, 0, 0);  // 30% chance to move
+        } else if (rightColor.a < 0.5) {
+            return random > 0.7 ? originalColor : half4(1, 0, 0, 0);  // 30% chance to move
         }
     }
     
-    // If we moved, show sand at new position
-    if (newPos.y > position.y) {
-        return half4(1.0, 0.8, 0.6, 1.0);  // Sand color
+    return originalColor;  // Stay in original position if can't move
+}
+
+[[ stitchable ]] half4 sandReceive(
+    float2 position,
+    SwiftUI::Layer layer,
+    float2 resolution,
+    float time
+) {
+    half4 currentColor = layer.sample(position);
+    
+    // If current position is not empty, no need to check for incoming sand
+    if (currentColor.a > 0.2) {
+        return currentColor;
     }
     
-    return originalColor;  // Stay in place if we couldn't move
+    float steps = floor(abs(time) * 4.0);
+    
+    // Check above positions for sand that might fall here
+    float2 abovePos = position + float2(0.0, -1.0);
+    float2 leftPos = position + float2(-1.0, -1.0);
+    float2 rightPos = position + float2(1.0, -1.0);
+    
+    half4 aboveColor = layer.sample(abovePos);
+    half4 leftColor = layer.sample(leftPos);
+    half4 rightColor = layer.sample(rightPos);
+    
+    // If any position above has sand that's marked for movement (a == 0)
+    if (aboveColor.a > 0.1) {
+        return half4(0.8, 0.7, 0.2, 1.0);  // Sand color
+    } else if (leftColor.a > 0.1) {
+        return half4(0.8, 0.7, 0.2, 1.0);
+    } else if (rightColor.a > 0.1) {
+        return half4(0.8, 0.7, 0.2, 1.0);
+    }
+    
+    return currentColor;
 }

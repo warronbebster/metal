@@ -10,15 +10,20 @@ import SwiftUI
 struct ContentView: View {
     
     var body: some View {
-        Text("Hello, we\nlove sand!")
-            .font(.largeTitle)
-            .fontWeight(.bold)
-            .wigglyShader()
+//        Text("Hello, we\nlove sand!")
+//            .font(.largeTitle)
+//            .fontWeight(.bold)
+//            .sandEffect()
         
+//        Image(systemName: "globe")
+//            .font(.system(size: 100))
+//            .foregroundStyle(.blue)
+//            .wigglyShader()
         Image(systemName: "globe")
             .font(.system(size: 100))
             .foregroundStyle(.blue)
-            .wigglyShader()
+            .sandEffect()
+            // .sandEffect2()
 //            .sandyShader()
     //        Rectangle()  // Use Rectangle instead of Color for guaranteed dimensions
     //                .fill(Color.blue)  // Give it a visible color

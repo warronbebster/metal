@@ -21,16 +21,16 @@ struct SandEffect: ViewModifier {
                     maxSampleOffset: CGSize(width: 100, height: 100)
                 )
                 // Then immediately apply the receive shader to move them
-                // .layerEffect(
-                //     ShaderLibrary.default.sandReceive(
-                //         .float2(
-                //             Float(UIScreen.main.bounds.width),
-                //             Float(UIScreen.main.bounds.height)
-                //         ),
-                //         .float(currentTime)
-                //     ),
-                //     maxSampleOffset: CGSize(width: 100, height: 100)
-                // )
+                .layerEffect(
+                    ShaderLibrary.default.sandReceive(
+                        .float2(
+                            Float(UIScreen.main.bounds.width),
+                            Float(UIScreen.main.bounds.height)
+                        ),
+                        .float(currentTime)
+                    ),
+                    maxSampleOffset: CGSize(width: 100, height: 100)
+                )
         }
     }
 }

@@ -28,24 +28,24 @@ float hash(float2 p) {
         float2 newPos = position - float2(0.0, steps);
         half4 checkColor = layer.sample(newPos);
         
-        if (checkColor.a < 0.1) {
+        if (checkColor.a < 0.3) {
             // Space is empty, show movement
             return half4(0.0, 1.0, 0.0, 0.3);  // Green for movement
         } 
 
         // Check diagonals with randomness
-        float2 leftPos = newPos + float2(-1.0, 1.0);
-        float2 rightPos = newPos + float2(1.0, 1.0);
+        float2 leftPos = newPos + float2(-1.0, 0.0);
+        float2 rightPos = newPos + float2(1.0, 0.0);
         half4 leftColor = layer.sample(leftPos);
         half4 rightColor = layer.sample(rightPos);
         
         if (leftColor.a < 0.5 && rightColor.a < 0.5) {
             // Both directions available, choose randomly
-            return random > 0.5 ? originalColor : half4(1, 0, 0, 0);
+            return random > 0.5 ? originalColor : half4(0, 0, 1, .3);
         } else if (leftColor.a < 0.5) {
-            return random > 0.7 ? originalColor : half4(1, 0, 0, 0);  // 30% chance to move
+            return random > 0.7 ? originalColor : half4(0, 0, 1, .3);  // 30% chance to move
         } else if (rightColor.a < 0.5) {
-            return random > 0.7 ? originalColor : half4(1, 0, 0, 0);  // 30% chance to move
+            return random > 0.7 ? originalColor : half4(0, 0, 1, .3);  // 30% chance to move
         }
     }
     
@@ -59,9 +59,10 @@ float hash(float2 p) {
     float time
 ) {
     half4 currentColor = layer.sample(position);
+    // does this sample… the previous layer of shader?
     
     // If current position is not empty, no need to check for incoming sand
-    if (currentColor.a > 0.2) {
+    if (currentColor.a > 0.3) {
         return currentColor;
     }
     
@@ -77,11 +78,11 @@ float hash(float2 p) {
     half4 rightColor = layer.sample(rightPos);
     
     // If any position above has sand that's marked for movement (a == 0)
-    if (aboveColor.a > 0.1) {
+    if (aboveColor.a < 0.3) {
         return half4(0.8, 0.7, 0.2, 1.0);  // Sand color
-    } else if (leftColor.a > 0.1) {
+    } else if (leftColor.a > 0.3) {
         return half4(0.8, 0.7, 0.2, 1.0);
-    } else if (rightColor.a > 0.1) {
+    } else if (rightColor.a > 0.3) {
         return half4(0.8, 0.7, 0.2, 1.0);
     }
     

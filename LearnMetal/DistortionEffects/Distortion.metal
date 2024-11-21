@@ -30,6 +30,17 @@ float noise2(float2 st) {
         + (d - b) * u.x * u.y;
 }
 
+
+// Helper function to generate 2D noise
+float noise2d(float x, float y) {
+    // Simple 2D noise function - returns a value between -1 and 1
+    // Uses multiple sine waves to create more organic movement
+    float value = sin(x * 1.5) * cos(y * 1.5) * 0.5;
+    value += sin(x * 3.7 + y * 2.3) * 0.25;
+    value += sin(y * 4.1 - x * 1.7) * 0.25;
+    return value;
+}
+
 float2 displace(float2 position, float2 center, float time) {
     // Calculate vector from center to position
     float2 toCenter = position - center;
@@ -96,21 +107,24 @@ float2 wiggly(float2 position, float time) {
 }
 
 [[ stitchable ]] float2 sandy(float2 position, float time) {
-    // Sample the original position first to see if there's content
-    float2 originalPos = position;
-// 
+    float2 center = float2(80, 150); // Assuming screen center
+    float2 directionFromCenter = normalize(position - center);  // Get direction vector pointing away from center
     
     // Calculate fall distance based on time
-    float fallDistance = time * 10.0;
+    float distance = time;
+    float frequency = 0.3;
+    float driftStrength = 3.5;  // Adjust this to control how strongly particles drift away
     
-    // If there's space below, move down
-    float2 newPos = position + float2(0.0, fallDistance);
+    float2 newPos = position;
     
-    // Add some random horizontal drift
-    // This does not compound over time
-    float drift = random2(position + time) * 2.0 - 1.0;  // Range -1 to 1
-    newPos.x += drift * fallDistance;  // Adjust drift amount
-    newPos.y += drift * fallDistance;  // Adjust drift amount
+    // Add noise for organic movement
+    float noiseX = noise2d(position.x * frequency, time * frequency);
+    float noiseY = noise2d(position.y * frequency, (time + 100) * frequency);
+    newPos.x += noiseX * distance;
+    newPos.y += noiseY * distance;
+    
+    // Add directional drift away from center
+    newPos += abs(directionFromCenter * distance * driftStrength);
     
     return newPos;
 }

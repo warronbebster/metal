@@ -15,16 +15,30 @@ struct ContentView: View {
 //            .fontWeight(.bold)
 //            .sandEffect()
         
+       Button(action: {}) {
+           HStack {
+               Image(systemName: "globe")
+                   .font(.system(size: 24))
+               Text("Sandify")
+                   .font(.headline)
+           }
+           .foregroundStyle(.black)
+           .padding()
+           .frame(minWidth: 200)
+           .background(.cyan.opacity(0.2))
+           .clipShape(RoundedRectangle(cornerRadius: 8))
+       }
+//       .wigglyShader()
+       .sandyShader()
+       
+        
 //        Image(systemName: "globe")
 //            .font(.system(size: 100))
 //            .foregroundStyle(.blue)
-//            .wigglyShader()
-        Image(systemName: "globe")
-            .font(.system(size: 100))
-            .foregroundStyle(.blue)
-            .sandEffect()
-            // .sandEffect2()
-//            .sandyShader()
+//            .sandEffect()
+//
+        
+        
     //        Rectangle()  // Use Rectangle instead of Color for guaranteed dimensions
     //                .fill(Color.blue)  // Give it a visible color
     //                .frame(width: 800, height: 600)  // Match our resolution

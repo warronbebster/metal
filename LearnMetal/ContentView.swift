@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+     @State private var showShaders = false
     
     var body: some View {
-//        Text("Hello, we\nlove sand!")
-//            .font(.largeTitle)
-//            .fontWeight(.bold)
-//            .sandEffect()
+        VStack {
+        Text("Hello, we\nlove sand!")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+            .distortionShader(isEnabled: showShaders)
         
-       Button(action: {}) {
+        Button(action: {
+                showShaders.toggle()
+            }) {
            HStack {
                Image(systemName: "globe")
                    .font(.system(size: 24))
@@ -29,7 +33,9 @@ struct ContentView: View {
            .clipShape(RoundedRectangle(cornerRadius: 8))
        }
 //       .wigglyShader()
-       .sandyShader()
+    //    .sandyShader()
+        // .timeVaryingColorShader()
+        .distortionShader(isEnabled: showShaders)
        
         
 //        Image(systemName: "globe")
@@ -57,6 +63,8 @@ struct ContentView: View {
 ////            .turbNoiseShader()
 //            .sandEffect()
         
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
     }
 }
 

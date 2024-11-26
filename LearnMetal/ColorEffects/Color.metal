@@ -45,3 +45,4 @@ half4 timeVaryingColor(
                  oscillate(-2 * time + position.x/size.y),
                  1.0);
 }
+

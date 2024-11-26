@@ -9,8 +9,8 @@ import SwiftUI
 
 extension View {
     
-    func distortionShader() -> some View {
-        modifier(DistortionShader())
+    func distortionShader(isEnabled: Bool) -> some View {
+        modifier(DistortionShader(isEnabled: isEnabled))
     }
     
     func wigglyShader() -> some View {
@@ -24,15 +24,26 @@ extension View {
 }
 
 struct DistortionShader: ViewModifier {
+    let isEnabled: Bool
+    private let startDate = Date()
     
     func body(content: Content) -> some View {
-        content
-            .padding(.horizontal, 100)
-            .drawingGroup()
-            .distortionEffect(
-                ShaderLibrary.distortion(),
-                maxSampleOffset: CGSize(width: 100, height: 0)
-            )
+        if isEnabled {
+            TimelineView(.animation) { _ in
+                content
+                    .drawingGroup()
+                    .colorEffect(ShaderLibrary.hidePixels(
+                        .float(startDate.timeIntervalSinceNow))
+                    )
+                    .distortionEffect(
+                        ShaderLibrary.distortion(
+                            .float(startDate.timeIntervalSinceNow)),
+                        maxSampleOffset: CGSize(width: 100, height: 200)
+                    )
+            }
+        } else {
+            content
+        }
     }
 }
 
@@ -54,6 +65,7 @@ struct WigglyShader: ViewModifier {
         }
     }
 }
+
 struct SandyShader: ViewModifier {
 
     private let startDate = Date()

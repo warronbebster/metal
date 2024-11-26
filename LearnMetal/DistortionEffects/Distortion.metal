@@ -12,6 +12,29 @@ float random2(float2 position) {
     return fract(sin(dot(position, float2(12.9898, 78.233))) * 43758.5453123);
 }
 
+// Metal Shading Language function for sine path calculation
+float2 calculate_sine_path(float time, float angle)
+{
+    // Base sine path calculation
+    float x = time;
+    float y = sin(time);
+    
+    // 2D rotation matrix transformation
+    float rotated_x = x * cos(angle) - y * sin(angle);
+    float rotated_y = x * sin(angle) + y * cos(angle);
+    
+    return float2(rotated_x, rotated_y);
+}
+
+float calculate_angle(float x, float y)
+{
+    // atan2 returns angle in radians
+    // Important: atan2(y, x) - note the order of arguments!
+    float angle = atan2(y, x);
+    
+    return angle;
+}
+
 
 float noise2(float2 st) {
 
@@ -106,7 +129,8 @@ float2 wiggly(float2 position, float time) {
     return displace(position, center, time);
 }
 
-[[ stitchable ]] float2 sandy(float2 position, float time) {
+[[ stitchable ]] 
+float2 sandy(float2 position, float time) {
     float2 center = float2(80, 150); // Assuming screen center
     float2 directionFromCenter = normalize(position - center);  // Get direction vector pointing away from center
     
@@ -127,4 +151,52 @@ float2 wiggly(float2 position, float time) {
     newPos += abs(directionFromCenter * distance * driftStrength);
     
     return newPos;
+}
+
+
+[[ stitchable ]]
+float2 distortion(float2 position, float time) {
+    float2 center = float2(0, 80); // Assuming screen center
+    float2 directionFromCenter = normalize(position - center);  // Get direction vector pointing away from center
+
+
+    // this starts quick then goes to 0
+    float logTime = log(abs(time) + 1);
+
+    // Check if sum of x and y coordinates is odd
+    // if (int(position.x * position.y) % 2 != 0) {
+    //     return position;
+    // }
+
+    // Calculate angle in radians based on position
+    float angle = calculate_angle(-directionFromCenter.x, -directionFromCenter.y);
+    // Calculate sine path displacement
+    float2 sinePath = calculate_sine_path(logTime, angle);
+    float2 displacedPos = position + (sinePath * 20);
+
+    return displacedPos;
+}
+
+[[ stitchable ]]
+half4 hidePixels(
+    float2 position,
+    half4 color,
+    float time
+) {
+    float logTime = log(abs(time) + 1);
+    // if (position.x + position.y > abs(time * 100.0)) {
+    //     return color;
+    // }
+    // float timeThreshold = (abs(time) / 10) - 1.0;
+    float timeThreshold = logTime ;
+
+    // if (noise2d(position.x, position.y) > timeThreshold) {
+    // if (noise2(position) > timeThreshold) {
+    if (random2(position) > timeThreshold) {
+        return color;
+    }
+
+
+    return half4(color.rgb, 0.0);
+
 }

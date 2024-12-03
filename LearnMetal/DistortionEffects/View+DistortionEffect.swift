@@ -40,6 +40,7 @@ struct DistortionShader: ViewModifier {
                             .float(startDate.timeIntervalSinceNow)),
                         maxSampleOffset: CGSize(width: 100, height: 200)
                     )
+                    
             }
         } else {
             content

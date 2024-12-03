@@ -156,12 +156,12 @@ float2 sandy(float2 position, float time) {
 
 [[ stitchable ]]
 float2 distortion(float2 position, float time) {
-    float2 center = float2(0, 80); // Assuming screen center
+    float2 center = float2(0, 100); // Assuming screen center
     float2 directionFromCenter = normalize(position - center);  // Get direction vector pointing away from center
 
 
     // this starts quick then goes to 0
-    float logTime = log(abs(time) + 1);
+    float logTime = log(abs(time) + 1) * 4;
 
     // Check if sum of x and y coordinates is odd
     // if (int(position.x * position.y) % 2 != 0) {

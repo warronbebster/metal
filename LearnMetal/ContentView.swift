@@ -12,30 +12,31 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-        Text("Hello, we\nlove sand!")
-            .font(.largeTitle)
-            .fontWeight(.bold)
+            Text("Hello, we\nlove sand!")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .distortionShader(isEnabled: showShaders)
+                .padding(.top, 50) // Add top padding to the text
+            
+            Button(action: {
+                    showShaders.toggle()
+                }) {
+                HStack {
+                    Image(systemName: "globe")
+                    .font(.system(size: 24))
+                    Text("Sandify")
+                    .font(.headline)
+                }
+                .foregroundStyle(.black)
+                .padding()
+                .frame(minWidth: 200)
+                .background(Color(red: 229/255, green: 224/255, blue: 204/255))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            // .timeVaryingColorShader()
             .distortionShader(isEnabled: showShaders)
-        
-        Button(action: {
-                showShaders.toggle()
-            }) {
-           HStack {
-               Image(systemName: "globe")
-                   .font(.system(size: 24))
-               Text("Sandify")
-                   .font(.headline)
-           }
-           .foregroundStyle(.black)
-           .padding()
-           .frame(minWidth: 200)
-           .background(.cyan.opacity(0.2))
-           .clipShape(RoundedRectangle(cornerRadius: 8))
-       }
-//       .wigglyShader()
-    //    .sandyShader()
-        // .timeVaryingColorShader()
-        .distortionShader(isEnabled: showShaders)
+            .blendMode(.multiply) // Try different blend modes
+    
        
         
 //        Image(systemName: "globe")
@@ -64,7 +65,10 @@ struct ContentView: View {
 //            .sandEffect()
         
         }
-        .frame(maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Color(red: 243/255, green: 240/255, blue: 229/255))
+        .ignoresSafeArea() // This ensures the background color extends to the edges
+        
     }
 }
 

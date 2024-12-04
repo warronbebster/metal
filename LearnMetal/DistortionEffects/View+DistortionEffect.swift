@@ -32,6 +32,7 @@ struct DistortionShader: ViewModifier {
             TimelineView(.animation) { _ in
                 content
                     .drawingGroup()
+                    // .background(Color(red: 243/255, green: 240/255, blue: 229/255))
                     .colorEffect(ShaderLibrary.hidePixels(
                         .float(startDate.timeIntervalSinceNow))
                     )
@@ -40,8 +41,11 @@ struct DistortionShader: ViewModifier {
                             .float(startDate.timeIntervalSinceNow)),
                         maxSampleOffset: CGSize(width: 100, height: 200)
                     )
+                    .compositingGroup() // Add this
+                    .blendMode(.darken) // Try different blend modes
                     
             }
+            
         } else {
             content
         }

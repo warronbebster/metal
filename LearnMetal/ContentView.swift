@@ -16,7 +16,7 @@ struct ContentView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .distortionShader(isEnabled: showShaders)
-                .padding(.top, 50) // Add top padding to the text
+                .padding(.top, 100) // Add top padding to the text
             
             Button(action: {
                     showShaders.toggle()

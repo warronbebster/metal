@@ -34,7 +34,7 @@ float2 calculate_spiral_path(float time, float angle)
     
     // Parametric equations for spiral
     // r = a + b*theta where theta increases with time
-    float theta = time * 2.0;  // Multiply by 2.0 to make it wind faster
+    float theta = time * a;  // Multiply by 2.0 to make it wind faster
     float radius = growth * theta;
     
     // Convert polar coordinates (r,theta) to Cartesian (x,y)
@@ -196,11 +196,11 @@ float2 distortion(float2 position, float time) {
     float angle = calculate_angle(-directionFromCenter.x, -directionFromCenter.y);
     float intensifiedAngle = angle * 3.0; // or 3.0, 4.0 for more intensity
     float noise = noise2(position);
-    float position_rand = 1.0 / noise;
+    float position_rand = 0.2 / noise;
 
     // Calculate sine path displacement
     float2 sinePath = calculate_sine_path(logTime, intensifiedAngle);
-    float2 displacedPos = position + (position_rand * (sinePath * intensifiedAngle));
+    float2 displacedPos = position + (noise2d(position.x, position.y) * time * 3.0) +  (sinePath * intensifiedAngle);
 
     return displacedPos;
 }
@@ -211,7 +211,7 @@ half4 hidePixels(
     half4 color,
     float time
 ) {
-    float logTime = log(abs(time) + 1);
+    float logTime = log(abs(time) + 1) * 1.2;
     // float logTime = -(pow(10, -sqrt(abs(time))) - 1);
     
     // if (position.x + position.y > abs(time * 100.0)) {

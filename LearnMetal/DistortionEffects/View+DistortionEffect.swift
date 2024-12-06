@@ -8,22 +8,16 @@
 import SwiftUI
 
 extension View {
-    
-    func distortionShader(isEnabled: Bool) -> some View {
-        modifier(DistortionShader(isEnabled: isEnabled))
-    }
-    
-    func wigglyShader() -> some View {
-        modifier(WigglyShader())
-    }
-    
-    func sandyShader() -> some View {
-        modifier(SandyShader())
+    func distortionFadeOutShader(isEnabled: Bool) -> some View {
+        modifier(DistortionFadeOutShader(isEnabled: isEnabled))
     }
 
+    func distortionFadeInShader(isEnabled: Bool) -> some View {
+        modifier(DistortionFadeInShader(isEnabled: isEnabled))
+    }
 }
 
-struct DistortionShader: ViewModifier {
+struct DistortionFadeOutShader: ViewModifier {
     let isEnabled: Bool
     private let startDate = Date()
     
@@ -37,7 +31,7 @@ struct DistortionShader: ViewModifier {
                         .float(startDate.timeIntervalSinceNow))
                     )
                     .distortionEffect(
-                        ShaderLibrary.distortion(
+                        ShaderLibrary.distortionFadeOut(
                             .float(startDate.timeIntervalSinceNow)),
                         maxSampleOffset: CGSize(width: 100, height: 200)
                     )
@@ -52,39 +46,32 @@ struct DistortionShader: ViewModifier {
     }
 }
 
-struct WigglyShader: ViewModifier {
-
+struct DistortionFadeInShader: ViewModifier {
+    let isEnabled: Bool
     private let startDate = Date()
-
+    
     func body(content: Content) -> some View {
-        TimelineView(.animation) { _ in
+        if isEnabled {
+            TimelineView(.animation) { _ in
+                content
+                    .drawingGroup()
+                    // .background(Color(red: 243/255, green: 240/255, blue: 229/255))
+                    .colorEffect(ShaderLibrary.showPixels(
+                        .float(startDate.timeIntervalSinceNow))
+                    )
+                    .distortionEffect(
+                        ShaderLibrary.distortionFadeIn(
+                            .float(startDate.timeIntervalSinceNow)),
+                        maxSampleOffset: CGSize(width: 100, height: 200)
+                    )
+                    .compositingGroup() // Add this
+                    .blendMode(.darken) // Try different blend modes
+                    
+            }
+            
+        } else {
             content
-                .padding(.vertical, 100)
-                .drawingGroup()
-                .distortionEffect(
-                    ShaderLibrary.wiggly(
-                        .float(startDate.timeIntervalSinceNow)),
-//                    warn iOS that the pixels might move
-                    maxSampleOffset: CGSize(width: 120, height: 200)
-                )
         }
     }
 }
 
-struct SandyShader: ViewModifier {
-
-    private let startDate = Date()
-
-    func body(content: Content) -> some View {
-        TimelineView(.animation) { _ in
-            content
-                .drawingGroup()
-                .distortionEffect(
-                    ShaderLibrary.sandy(
-                        .float(startDate.timeIntervalSinceNow)),
-//                    warn iOS that the pixels might move
-                    maxSampleOffset: CGSize(width: 240, height: 200)
-                )
-        }
-    }
-}

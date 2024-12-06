@@ -86,111 +86,19 @@ float noise2d(float x, float y) {
     return value;
 }
 
-// float2 displace(float2 position, float2 center, float time) {
-//     // Calculate vector from center to position
-//     float2 toCenter = position - center;
-    
-//     // Calculate base direction from center
-//     float2 baseDirection = normalize(toCenter);
-    
-//     // Get persistent noise value based on original position only
-//     // Scale position down for smoother variation between neighboring pixels
-//     // this returns a value from -1 to 1
-//     float noiseValue = noise2(position) * 2.0 - 1.0;
-    
-//     // Create a subtle directional offset
-//     // Convert noise to a small angle variation (-0.2 to 0.2 radians)
-//     // float angle = (noiseValue - 0.5);
-//     // float2 noiseDirection = float2(
-//     //     cos(angle) * baseDirection.x - sin(angle) * baseDirection.y,
-//     //     sin(angle) * baseDirection.x + cos(angle) * baseDirection.y
-//     // );
-    
-//     // Scale displacement with time using smooth log growth
-//     float displacement = (log(abs(time) + 1) * 40) * noiseValue;
-//     // float displacement = (abs(time) + 1) * noiseValue;
-//     // float displacement = (abs(time) + 1);
-
-//     float2 displacedPos = position - baseDirection * displacement;
-
-//     // float noiseOnDestination = noise2(displacedPos, 0);
-    
-//     // float2 finalPos = displacedPos + noiseDirection;
-    
-//     // Apply the displacement in the noise-modified direction
-//     return displacedPos;
-// }
-
-// this is just a position shader. You can layer other shaders (e.g. color) below them to affect opacity
-// [[ stitchable ]]
-// float2 wiggly(float2 position, float time) {
-//     float2 center = float2(80, 150); // Assuming screen center
-//     float2 toCenter = position - center;
-//     float2 direction = normalize(toCenter);
-//     // float distance = length(toCenter);
-    
-//     // Add perlin-like noise to direction
-//     // this just adds random noise in a particular direction, but doesn't displace consistently
-//     float noiseAmount = noise2(position);
-//     float2 noiseDir = float2(cos(noiseAmount * 6.28), sin(noiseAmount * 6.28));
-    
-//     // Blend original direction with noise
-//     direction = -normalize(direction );
-//     int displacementSpeed = 5;
-//     int displacementAmount = 20;
-
-//     float logTime = log(abs(time) + 1) * displacementSpeed;
-    
-//     // ok so dividing the displacement by time reverses the spread
-//     // float displacement =  log(time) + 1;
-//    float displacement = max(logTime, 0.0) * displacementAmount;
-//     // exponential decay: this starts quick and then falls into place
-//     //  float displacement = 100 * pow(2, time);
-    
-//     // return position + direction * displacement;
-//     return displace(position, center, time);
-// }
-
-// [[ stitchable ]] 
-// float2 sandy(float2 position, float time) {
-//     float2 center = float2(80, 150); // Assuming screen center
-//     float2 directionFromCenter = normalize(position - center);  // Get direction vector pointing away from center
-    
-//     // Calculate fall distance based on time
-//     float distance = time;
-//     float frequency = 0.3;
-//     float driftStrength = 3.5;  // Adjust this to control how strongly particles drift away
-    
-//     float2 newPos = position;
-    
-//     // Add noise for organic movement
-//     float noiseX = noise2d(position.x * frequency, time * frequency);
-//     float noiseY = noise2d(position.y * frequency, (time + 100) * frequency);
-//     newPos.x += noiseX * distance;
-//     newPos.y += noiseY * distance;
-    
-//     // Add directional drift away from center
-//     newPos += abs(directionFromCenter * distance * driftStrength);
-    
-//     return newPos;
-// }
 
 
 [[ stitchable ]]
-float2 distortion(float2 position, float time) {
-        // some pixels stay in place
-    // if (random2(position) > 0.8) {
-    //     return position;
-    // }
+float2 distortionFadeOut(float2 position, float time) {
 
     // this is measured against the bounding box of the element I think
-    float2 center = float2(100, -50); // Assuming screen center
+    float2 center = float2(80, -50); // Assuming screen center
     float2 directionFromCenter = normalize(position - center);  // Get direction vector pointing away from center
 
 
     // this starts quick then goes to 0
     // float logTime = log(abs(time) + 1);
-    float logTime = -(pow(10, -sqrt(abs(time))) - 1);
+    float logTime = -(pow(10, -sqrt(abs(time / 2.0))) - 1);
 
     // Calculate angle in radians based on position
     float angle = calculate_angle(-directionFromCenter.x, -directionFromCenter.y);
@@ -200,10 +108,38 @@ float2 distortion(float2 position, float time) {
 
     // Calculate sine path displacement
     float2 sinePath = calculate_sine_path(logTime, intensifiedAngle);
-    float2 displacedPos = position + (noise2d(position.x, position.y) * time * 3.0) +  (sinePath * intensifiedAngle);
+    float2 displacedPos = position + (noise2d(position.x, position.y) * logTime) + (sinePath * intensifiedAngle);
 
     return displacedPos;
 }
+
+
+[[ stitchable ]]
+float2 distortionFadeIn(float2 position, float time) {
+
+
+    // this is measured against the bounding box of the element I think
+    float2 center = float2(80, -50); // Assuming screen center
+    float2 directionFromCenter = normalize(position - center);  // Get direction vector pointing away from center
+
+    // this starts slow then accelerates
+    float logTime = pow(10, -sqrt(abs(time / 2.0)));
+    // float logTime = max(0.0, -log(abs(time) + 1) + 1);
+
+    // Calculate angle in radians based on position
+    float angle = calculate_angle(-directionFromCenter.x, -directionFromCenter.y);
+    float intensifiedAngle = angle * 3.0; // or 3.0, 4.0 for more intensity
+    float noise = noise2(position);
+    float position_rand = 2.8 / noise;
+
+    // Calculate sine path displacement
+    float2 sinePath = calculate_sine_path(logTime * 2.0, intensifiedAngle);
+    float2 displacedPos = position + (noise2d(position.x, position.y) * logTime) + (sinePath * intensifiedAngle);
+
+    return displacedPos;
+}
+
+
 
 [[ stitchable ]]
 half4 hidePixels(
@@ -211,7 +147,7 @@ half4 hidePixels(
     half4 color,
     float time
 ) {
-    float logTime = log(abs(time) + 1) * 1.2;
+    float logTime = log(abs(time) + 1) ;
     // float logTime = -(pow(10, -sqrt(abs(time))) - 1);
     
     // if (position.x + position.y > abs(time * 100.0)) {
@@ -231,3 +167,22 @@ half4 hidePixels(
     return half4(color.rgb, 0.0);
 
 }
+
+
+[[ stitchable ]]
+half4 showPixels(
+    float2 position,
+    half4 color,
+    float time
+) {
+    float logTime = log(abs(time) + 1) * 0.8;
+    float timeThreshold = logTime;
+
+    // Show pixels over time by inverting the condition
+    if (random2(position) <= timeThreshold) {
+        return color;
+    }
+
+    return half4(color.rgb, 0.0);
+}
+

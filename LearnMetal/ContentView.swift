@@ -12,11 +12,11 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Text("Hello, we\nlove sand!")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .distortionShader(isEnabled: showShaders)
-                .padding(.top, 100) // Add top padding to the text
+//            Text("Sand out")
+//                .font(.largeTitle)
+//                .fontWeight(.bold)
+//                .distortionFadeOutShader(isEnabled: showShaders)
+//                .padding(.top, 100) // Add top padding to the text
             
             Button(action: {
                     showShaders.toggle()
@@ -24,7 +24,7 @@ struct ContentView: View {
                 HStack {
                     Image(systemName: "globe")
                     .font(.system(size: 24))
-                    Text("Sandify")
+                    Text("Sand transition out")
                     .font(.headline)
                 }
                 .foregroundStyle(.black)
@@ -34,7 +34,36 @@ struct ContentView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             // .timeVaryingColorShader()
-            .distortionShader(isEnabled: showShaders)
+            .distortionFadeOutShader(isEnabled: showShaders)
+            .blendMode(.multiply) // Try different blend modes
+            .padding(.top, 100) // Add top padding to the text
+
+//            transition out
+            Text("Sand in")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .opacity(showShaders ? 1 : 0)
+                .distortionFadeInShader(isEnabled: showShaders)
+                .padding(.top, 100) // Add top padding to the text
+            
+            Button(action: {
+                    showShaders.toggle()
+                }) {
+                HStack {
+                    Image(systemName: "globe")
+                    .font(.system(size: 24))
+                    Text("Sand transition in")
+                    .font(.headline)
+                }
+                .foregroundStyle(.black)
+                .padding()
+                .frame(minWidth: 200)
+                .background(Color(red: 229/255, green: 224/255, blue: 204/255))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            // .timeVaryingColorShader()
+            .opacity(showShaders ? 1 : 0)
+            .distortionFadeInShader(isEnabled: showShaders)
             .blendMode(.multiply) // Try different blend modes
     
        

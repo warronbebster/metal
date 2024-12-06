@@ -139,6 +139,57 @@ float2 distortionFadeIn(float2 position, float time) {
     return displacedPos;
 }
 
+[[ stitchable ]]
+float2 distortionContinuous(float2 position, float time) {
+
+    
+    // this is measured against the bounding box of the element I think
+    float noise = noise2(position);
+    float noiseIndex = (noise + 1.0) * 5.0;
+
+    // Modulo the time to create a repeating cycle
+    float cycleTime = fmod(abs(time), noiseIndex);
+    // float cycleTime = pow(10, -sqrt(abs(cycleTime / 2.0)));
+
+
+    float centerX = cycleTime * 5.0;
+    float centerY = -50.0;
+    float2 center = float2(centerX, centerY);
+    float2 directionFromCenter = normalize(position - center);  // Get direction vector pointing away from center
+    // Return original position if noise is positive
+    if (noise > 0.4) {
+        return position;
+    }
+    
+
+
+
+
+    
+    // Calculate angle in radians based on position
+    float angle = calculate_angle(-directionFromCenter.x, -directionFromCenter.y);
+    float intensifiedAngle = angle * 3.0;
+
+
+    // Calculate sine path displacement
+    float2 sinePath = calculate_sine_path(cycleTime, intensifiedAngle);
+    
+    // Add a smooth transition near the cycle boundary
+    // float transitionWindow = 0.1; // Width of the transition window
+    // float transitionFactor = smoothstep(cycleDuration - transitionWindow, cycleDuration, cycleTime);
+    
+    // Blend between current position and displaced position based on transition
+    // float2 displacedPos = position + (noise2d(position.x, position.y) * time) + (sinePath * intensifiedAngle);
+    // return mix(displacedPos, position, transitionFactor);
+
+    // Calculate sine path displacement
+    // float2 displacedPos = position + (noise2d(position.x, position.y) * logTime) + (sinePath * intensifiedAngle);
+    float2 displacedPos = position + (sinePath * intensifiedAngle);
+
+    return displacedPos;
+}
+
+
 
 
 [[ stitchable ]]

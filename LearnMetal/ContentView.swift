@@ -38,14 +38,37 @@ struct ContentView: View {
             .blendMode(.multiply) // Try different blend modes
             .padding(.top, 100) // Add top padding to the text
 
-//            transition out
-            Text("Sand in")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .opacity(showShaders ? 1 : 0)
-                .distortionFadeInShader(isEnabled: showShaders)
-                .padding(.top, 100) // Add top padding to the text
+
+            // continuous
+            Button(action: {
+                    showShaders.toggle()
+                }) {
+                HStack {
+                    Image(systemName: "globe")
+                    .font(.system(size: 24))
+                    Text("Sand continuous")
+                    .font(.headline)
+                }
+                .foregroundStyle(.black)
+                .padding()
+                .frame(minWidth: 200)
+                .background(Color(red: 229/255, green: 224/255, blue: 204/255))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            // .timeVaryingColorShader()
+            .distortionContinuousShader(isEnabled: true)
+            .blendMode(.multiply) // Try different blend modes
+            .padding(.top, 20) // Add top padding to the text
+
             
+            // Text("Sand in")
+            //     .font(.largeTitle)
+            //     .fontWeight(.bold)
+            //     .opacity(showShaders ? 1 : 0)
+            //     .distortionFadeInShader(isEnabled: showShaders)
+            //     .padding(.top, 100) // Add top padding to the text
+
+            // fade in
             Button(action: {
                     showShaders.toggle()
                 }) {
@@ -65,6 +88,8 @@ struct ContentView: View {
             .opacity(showShaders ? 1 : 0)
             .distortionFadeInShader(isEnabled: showShaders)
             .blendMode(.multiply) // Try different blend modes
+
+
     
        
         

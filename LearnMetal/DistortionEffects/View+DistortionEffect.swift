@@ -16,8 +16,8 @@ extension View {
         modifier(DistortionFadeInShader(isEnabled: isEnabled))
     }
 
-    func distortionContinuousShader(isEnabled: Bool) -> some View {
-        modifier(DistortionContinuousShader(isEnabled: isEnabled))
+    func distortionContinuousShader(isEnabled: Bool, movementLevel: Float) -> some View {
+        modifier(DistortionContinuousShader(isEnabled: isEnabled, movementLevel: movementLevel))
     }
 }
 
@@ -81,7 +81,13 @@ struct DistortionFadeInShader: ViewModifier {
 
 struct DistortionContinuousShader: ViewModifier {
     let isEnabled: Bool
+    let movementLevel: Float // Value between 0.0 and 1.0
     private let startDate = Date()
+    
+    init(isEnabled: Bool, movementLevel: Float = 0.5) {
+        self.isEnabled = isEnabled
+        self.movementLevel = max(0.0, min(1.0, movementLevel)) // Clamp between 0 and 1
+    }
     
     func body(content: Content) -> some View {
         if isEnabled {
@@ -94,7 +100,8 @@ struct DistortionContinuousShader: ViewModifier {
                     // )
                     .distortionEffect(
                         ShaderLibrary.distortionContinuous(
-                            .float(startDate.timeIntervalSinceNow)),
+                            .float(startDate.timeIntervalSinceNow),
+                            .float(movementLevel)),
                         maxSampleOffset: CGSize(width: 100, height: 200)
                     )
                     .compositingGroup() // Add this

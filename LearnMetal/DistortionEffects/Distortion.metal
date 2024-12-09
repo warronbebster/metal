@@ -57,7 +57,7 @@ float calculate_angle(float x, float y)
     return angle;
 }
 
-
+// returns values from 0.0 to 1.0
 float noise2(float2 st) {
 
     float2 i = floor(st);
@@ -140,24 +140,26 @@ float2 distortionFadeIn(float2 position, float time) {
 }
 
 [[ stitchable ]]
-float2 distortionContinuous(float2 position, float time) {
+float2 distortionContinuous(float2 position, float time, float movementLevel) {
 
     
     // this is measured against the bounding box of the element I think
-    float noise = noise2(position);
-    float noiseIndex = (noise + 1.0) * 5.0;
+    float noise = random2(position);
+    float noiseIndex = (noise + 0.5) * 5.0;
 
     // Modulo the time to create a repeating cycle
     float cycleTime = fmod(abs(time), noiseIndex);
+    float noiseTime = noise2d(position.x + time, position.y + time);
     // float cycleTime = pow(10, -sqrt(abs(cycleTime / 2.0)));
 
 
-    float centerX = cycleTime * 5.0;
-    float centerY = -50.0;
+    float centerX = (sin(abs(time / 10)) * 20.0) + 50.0 ;
+    float centerY = (sin(abs(time / 11)) * 19.0) - 40.0 ;;
     float2 center = float2(centerX, centerY);
     float2 directionFromCenter = normalize(position - center);  // Get direction vector pointing away from center
     // Return original position if noise is positive
-    if (noise > 0.4) {
+    // if (noiseTime > 0.8) {
+    if (noise > movementLevel) {
         return position;
     }
     
@@ -168,7 +170,7 @@ float2 distortionContinuous(float2 position, float time) {
     
     // Calculate angle in radians based on position
     float angle = calculate_angle(-directionFromCenter.x, -directionFromCenter.y);
-    float intensifiedAngle = angle * 3.0;
+    float intensifiedAngle = angle * 2.5;
 
 
     // Calculate sine path displacement
@@ -183,7 +185,7 @@ float2 distortionContinuous(float2 position, float time) {
     // return mix(displacedPos, position, transitionFactor);
 
     // Calculate sine path displacement
-    // float2 displacedPos = position + (noise2d(position.x, position.y) * logTime) + (sinePath * intensifiedAngle);
+    // float2 displacedPos = position + (noise * cycleTime) + (sinePath * intensifiedAngle);
     float2 displacedPos = position + (sinePath * intensifiedAngle);
 
     return displacedPos;

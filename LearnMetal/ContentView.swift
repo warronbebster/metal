@@ -56,9 +56,16 @@ struct ContentView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             // .timeVaryingColorShader()
-            .distortionContinuousShader(isEnabled: true)
+            .distortionContinuousShader(isEnabled: true, movementLevel: 0.5)
             .blendMode(.multiply) // Try different blend modes
             .padding(.top, 20) // Add top padding to the text
+            
+            
+            LoadingCircles()
+                .frame(width: 100, height: 100)
+                .distortionContinuousShader(isEnabled: true, movementLevel: 0.8)
+                .padding(.top, 50) // Add top padding to the text
+                // .blendMode(.multiply) // Try different blend modes
 
             
             // Text("Sand in")
